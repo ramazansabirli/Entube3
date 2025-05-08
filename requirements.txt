@@ -1,0 +1,7 @@
+fastapi
+pydantic
+scikit-learn
+joblib
+uvicorn
+jinja2
+python-multipart
