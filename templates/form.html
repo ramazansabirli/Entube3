@@ -5,7 +5,6 @@
 <body>
     <h2>Hasta Verisi Girişi</h2>
     <form action="/form-predict/" method="post">
-
         <h3>Demografi</h3>
         Age: <input type="number" name="Age"><br>
         Sex (0=Male, 1=Female): <input type="number" name="Sex"><br>
@@ -46,8 +45,9 @@
         Lactate: <input type="number" step="0.01" name="Lactate_pre"><br>
         FiO2: <input type="number" name="FiO2_pre"><br>
 
-        <h3>Diğer Klinik Bilgiler</h3>
-        Accessory Muscle Use (0/1): <input type="number" name="Accessory_Muscle_Use"><br>
+        <h3>Solunumsal Bulgular</h3>
+        Respiratory Rate: <input type="number" name="Respiratory_Rate"><br>
+        Accessory Muscle Use (0=No, 1=Yes): <input type="number" name="Accessory_Muscle_Use"><br>
 
         <h3>Mevcut Aldığı Tedavi</h3>
         <select name="Current_Treatment">
@@ -57,20 +57,24 @@
           <option value="NIMV">NIMV</option>
         </select><br>
 
-        <h3>Tanı (Clinical Diagnosis)</h3>
+        <h3>Klinik Tanı</h3>
         <select name="Clinical_Diagnosis">
           <option value="KOAH alevlenmesi">KOAH alevlenmesi</option>
           <option value="Pnömoni">Pnömoni</option>
           <option value="Pulmoner emboli">Pulmoner emboli</option>
           <option value="Astım krizi">Astım krizi</option>
+          <option value="ARDS">ARDS</option>
+          <option value="Kardiyojenik AC ödemi">Kardiyojenik AC ödemi</option>
         </select><br>
 
-        <h3>Başvuru Şikayeti (Primary Complaint)</h3>
+        <h3>Başvuru Şikayeti</h3>
         <select name="Primary_Complaint">
           <option value="Nefes darlığı">Nefes darlığı</option>
           <option value="Bilinç değişikliği">Bilinç değişikliği</option>
           <option value="Hipotansiyon">Hipotansiyon</option>
           <option value="Göğüs ağrısı">Göğüs ağrısı</option>
+          <option value="Ateş">Ateş</option>
+          <option value="Yorgunluk">Yorgunluk</option>
         </select><br>
 
         <br>
