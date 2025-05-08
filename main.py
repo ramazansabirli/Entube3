@@ -1,18 +1,11 @@
-
 from fastapi import FastAPI, Form, Request
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse
-import joblib
-import numpy as np
-import os
+from fastapi.responses import HTMLResponse, StreamingResponse
+from xhtml2pdf import pisa
+from io import BytesIO
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
-
-pipe_failure = joblib.load("pipe_failure.pkl")
-pipe_treatment = joblib.load("pipe_treatment.pkl")
-failure_label = joblib.load("failure_label.pkl")
-treatment_label = joblib.load("treatment_label.pkl")
 
 @app.get("/", response_class=HTMLResponse)
 async def form(request: Request):
@@ -25,8 +18,21 @@ async def predict_from_form(
     Sex: int = Form(...),
     Weight_kg: float = Form(...),
     Height_cm: float = Form(...),
-    RR_pre: int = Form(...),
+    HR_gelis: int = Form(...),
+    RR_gelis: int = Form(...),
+    SBP_gelis: int = Form(...),
+    DBP_gelis: int = Form(...),
+    SpO2_gelis: float = Form(...),
+    GCS_gelis: int = Form(...),
+    pH_gelis: float = Form(...),
+    pCO2_gelis: float = Form(...),
+    pO2_gelis: float = Form(...),
+    HCO3_gelis: float = Form(...),
+    BE_gelis: float = Form(...),
+    Lactate_gelis: float = Form(...),
+    FiO2_gelis: int = Form(...),
     HR_pre: int = Form(...),
+    RR_pre: int = Form(...),
     SBP_pre: int = Form(...),
     DBP_pre: int = Form(...),
     SpO2_pre: float = Form(...),
@@ -38,20 +44,43 @@ async def predict_from_form(
     BE_pre: float = Form(...),
     Lactate_pre: float = Form(...),
     FiO2_pre: int = Form(...),
+    Respiratory_Rate: int = Form(...),
     Accessory_Muscle_Use: int = Form(...),
-    Clinical_Diagnosis: int = Form(...),
-    Primary_Complaint: int = Form(...)
+    Current_Treatment: str = Form(...),
+    Clinical_Diagnosis: str = Form(...),
+    Primary_Complaint: str = Form(...)
 ):
-    features = np.array([[Age, Sex, Weight_kg, Height_cm, RR_pre, HR_pre, SBP_pre, DBP_pre,
-                          SpO2_pre, GCS_pre, pH_pre, pCO2_pre, pO2_pre, HCO3_pre, BE_pre,
-                          Lactate_pre, FiO2_pre, Accessory_Muscle_Use, Clinical_Diagnosis,
-                          Primary_Complaint]])
-    pred_failure = pipe_failure.predict(features)[0]
-    features_with_failure = np.hstack((features, [[pred_failure]]))
-    pred_treatment = pipe_treatment.predict(features_with_failure)[0]
+    # Model entegrasyonu yapılacaksa buraya
+    failure_result = "Tip 2 (Hiperkapnik)"
+    treatment_result = "NIMV"
 
     return templates.TemplateResponse("result.html", {
         "request": request,
-        "failure_result": failure_label.inverse_transform([pred_failure])[0],
-        "treatment_result": treatment_label.inverse_transform([pred_treatment])[0]
+        "failure_result": failure_result,
+        "treatment_result": treatment_result
+    })
+
+@app.post("/download-pdf/")
+async def download_pdf(
+    failure_result: str = Form(...),
+    treatment_result: str = Form(...)
+):
+    html_content = f"""
+    <html>
+    <head><title>PDF Rapor</title></head>
+    <body>
+        <h2>Solunum Yetmezliği ve Tedavi Raporu</h2>
+        <p><strong>Solunum Yetmezliği Tipi:</strong> {failure_result}</p>
+        <p><strong>Önerilen Tedavi:</strong> {treatment_result}</p>
+        <br><hr><br>
+        <p>Bu rapor entube3 karar destek sistemi tarafından otomatik olarak oluşturulmuştur.</p>
+    </body>
+    </html>
+    """
+    pdf_stream = BytesIO()
+    pisa.CreatePDF(html_content, dest=pdf_stream)
+    pdf_stream.seek(0)
+
+    return StreamingResponse(pdf_stream, media_type="application/pdf", headers={
+        "Content-Disposition": "attachment; filename=rapor.pdf"
     })
