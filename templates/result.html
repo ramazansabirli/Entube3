@@ -1,13 +1,22 @@
-
-<!DOCTYPE html>
 <html>
 <head>
-    <title>Sonuç</title>
+    <title>Tahmin Sonucu</title>
 </head>
 <body>
-    <h2>Tahmin Sonucu</h2>
+    <h2>Solunum Yetmezliği ve Tedavi Önerisi</h2>
+
     <p><strong>Solunum Yetmezliği Tipi:</strong> {{ failure_result }}</p>
     <p><strong>Önerilen Tedavi:</strong> {{ treatment_result }}</p>
-    <a href="/">Yeni Giriş</a>
+
+    <br><hr><br>
+
+    <form action="/download-pdf/" method="post">
+        <input type="hidden" name="failure_result" value="{{ failure_result }}">
+        <input type="hidden" name="treatment_result" value="{{ treatment_result }}">
+        <input type="submit" value="PDF olarak indir">
+    </form>
+
+    <br>
+    <a href="/">Yeni Hasta Verisi Girişi</a>
 </body>
 </html>
